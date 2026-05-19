@@ -1,3 +1,6 @@
+
+@import "tailwindcss";
+
 /* globals.css - Base resets only. Dashboard styles are in dashboard.css */
 *, *::before, *::after {
   box-sizing: border-box;
