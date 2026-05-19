@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { KABUPATEN, rand } from "@/lib/dummy";
+import { KABUPATEN, JENIS_BENCANA, rand, jitter, desaLabel, kecLabel, UPDATED_AT } from "@/lib/dummy";
 
 export async function GET() {
   const affected = KABUPATEN.filter((_, i) => i < 12);
@@ -7,14 +7,15 @@ export async function GET() {
     const count = rand(1, 4);
     return Array.from({ length: count }, (_, j) => ({
       id: `BNC-${kab.id}-${j + 1}`,
+      kabupaten: kab.nama,
       kabupaten_kota: kab.nama,
       kabkota: kab.nama,
-      kecamatan: `Kec. ${["Mutiara","Johan Pahlawan","Bebesen","Kuta Makmur","Peusangan"][j % 5]}`,
-      desa: `Desa ${["Paya","Blang","Meureudu","Langkak","Pasie"][j % 5]} ${j + 1}`,
-      jenis_bencana: "Banjir",
-      status: ["critical","warning","normal"][j % 3],
-      lat: kab.lat + (Math.random() - 0.5) * 0.3,
-      lng: kab.lng + (Math.random() - 0.5) * 0.3,
+      kecamatan: kecLabel(j),
+      desa: desaLabel(j),
+      jenis_bencana: JENIS_BENCANA[j % JENIS_BENCANA.length],
+      status: ["critical", "warning", "normal"][j % 3],
+      ...jitter(kab.lat, kab.lng),
+      titik_pengungsian: rand(1, 5),
       korban_meninggal: rand(0, 5),
       korban_luka: rand(0, 20),
       korban_hilang: rand(0, 3),
@@ -27,7 +28,9 @@ export async function GET() {
       tambak_ha: parseFloat((Math.random() * 20).toFixed(1)),
       fasum_rusak: rand(0, 10),
       tanggal: "2026-04-28",
-      updated_at: new Date().toISOString(),
+      updated_at: UPDATED_AT(),
+      jiwa_terdampak: 0,
+      rumah: 0,
     }));
   });
   let total_jiwa = 0, total_pengungsi = 0, total_titik_pengungsian = 0, total_rumah = 0, total_sawah = 0, total_fasum = 0, total_kebun = 0, total_tambak = 0;
@@ -35,7 +38,7 @@ export async function GET() {
   data.forEach(d => {
     total_jiwa += (d.korban_meninggal + d.korban_luka + d.korban_hilang + d.pengungsi);
     total_pengungsi += d.pengungsi;
-    total_titik_pengungsian += 1;
+    total_titik_pengungsian += d.titik_pengungsian || 0;
     total_rumah += (d.rumah_rusak_berat + d.rumah_rusak_sedang + d.rumah_rusak_ringan);
     total_sawah += d.sawah_ha;
     total_fasum += d.fasum_rusak;
@@ -48,7 +51,7 @@ export async function GET() {
   return NextResponse.json({ 
     data, 
     total: data.length, 
-    updated_at: new Date().toISOString(),
+    updated_at: UPDATED_AT(),
     total_jiwa,
     total_pengungsi,
     total_titik_pengungsian,

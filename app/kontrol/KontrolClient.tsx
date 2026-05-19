@@ -162,6 +162,67 @@ export default function KontrolClient() {
             </div>
           )}
 
+          {section === "pengaturan" && (
+            <div className="max-w-lg space-y-4">
+              <div className="bg-white rounded-xl border shadow-sm p-6">
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Interval Refresh (menit)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={60}
+                  value={settings.autoRefreshMinutes}
+                  onChange={(e) => {
+                    const v = Math.max(1, parseInt(e.target.value, 10) || 5);
+                    const next = { ...settings, autoRefreshMinutes: v };
+                    setSettings(next);
+                    localStorage.setItem(KONTROL_SETTINGS_KEY, JSON.stringify(next));
+                    pushLog(`Refresh diubah ke ${v} menit`, "info");
+                  }}
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="bg-white rounded-xl border shadow-sm p-6">
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Tab Default Publik</label>
+                <select
+                  value={settings.defaultPublicTab}
+                  onChange={(e) => {
+                    const next = { ...settings, defaultPublicTab: e.target.value as KontrolSettings["defaultPublicTab"] };
+                    setSettings(next);
+                    localStorage.setItem(KONTROL_SETTINGS_KEY, JSON.stringify(next));
+                    pushLog(`Tab default: ${e.target.value}`, "info");
+                  }}
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="dampak">Dampak</option>
+                  <option value="peta-operasi">Peta Operasi</option>
+                  <option value="pengungsi">Pengungsi</option>
+                  <option value="bantuan">Bantuan</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          {section === "log" && (
+            <div className="bg-white rounded-xl border shadow-sm p-4 max-h-[480px] overflow-auto">
+              {activityLog.length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-8">Belum ada aktivitas</p>
+              ) : (
+                <ul className="space-y-2">
+                  {activityLog.map((log) => (
+                    <li key={log.id} className="text-sm border-b border-slate-100 pb-2 flex gap-3">
+                      <span className="text-[10px] text-slate-400 whitespace-nowrap">
+                        {new Date(log.time).toLocaleTimeString("id-ID")}
+                      </span>
+                      <span className={log.type === "success" ? "text-green-700" : log.type === "warn" ? "text-amber-700" : "text-slate-700"}>
+                        {log.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
           {section === "api" && (
             <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
               <table className="w-full text-left text-sm">
