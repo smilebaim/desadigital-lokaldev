@@ -1,0 +1,65 @@
+.kontrol-root {
+  font-family: "Inter", system-ui, sans-serif;
+  min-height: 100vh;
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.kontrol-sidebar {
+  background: linear-gradient(180deg, #166534 0%, #14532d 100%);
+}
+
+.kontrol-nav-item {
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.kontrol-nav-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.kontrol-nav-item.active {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.kontrol-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.kontrol-status-ok {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.kontrol-status-error {
+  background: #fef2f2;
+  color: #15803d;
+}
+
+.kontrol-status-pending {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+@keyframes kontrol-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.kontrol-checking {
+  animation: kontrol-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

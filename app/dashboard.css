@@ -1,0 +1,1511 @@
+/**
+ * Dashboard Monitoring Bencana Aceh - Styles
+ * Custom styles for the disaster monitoring dashboard
+ */
+
+/* === Base Styles === */
+* {
+  font-family: 'Inter', sans-serif;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  /* background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%); */
+  background: #d3d3d3;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main content wrapper - pushes footer to bottom */
+main {
+  flex: 1;
+}
+
+/* === Glass Effect === */
+.glass {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* === Card Hover Effect === */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+/* === Map Container === */
+#map,
+#mapOperasi,
+#mapPengungsi,
+#mapBantuan {
+  height: 100%;
+  width: 100%;
+  border-radius: 12px;
+  z-index: 1;
+}
+
+/* Ensure map panels don't overlap sticky header/tabs */
+.panel {
+  position: relative;
+  z-index: 1;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* === Leaflet Overrides === */
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 10 !important;
+}
+
+.leaflet-pane {
+  z-index: 1 !important;
+}
+
+.leaflet-control {
+  z-index: 10 !important;
+}
+
+/* Custom Leaflet Marker Icons */
+.custom-div-icon {
+  background: transparent;
+  border: none;
+}
+
+.marker-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  font-size: 11px;
+  color: white;
+}
+
+/* === Tab Styles === */
+.tab-btn {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: #16a34a;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.tab-btn.active::after {
+  width: 100%;
+}
+
+.tab-btn.active {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+/* === Menu Styles === */
+.menu-btn {
+  transition: all 0.3s ease;
+}
+
+.menu-btn.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+/* === Chart Container === */
+.chart-container {
+  position: relative;
+  height: 200px;
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* === Table Styles === */
+.data-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.data-table th {
+  position: sticky;
+  top: 0;
+  background: #f9fafb;
+  z-index: 10;
+}
+
+.data-table tr:hover {
+  background: #f9fafb;
+}
+
+/* === Badge Styles === */
+.badge {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-critical {
+  background: #fef2f2;
+  color: #16a34a;
+}
+
+.badge-warning {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.badge-ok {
+  background: #f0fdf4;
+  color: #059669;
+}
+
+/* === Toast === */
+#toastContainer {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  min-width: 280px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(300px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* === Loading Spinner === */
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #16a34a;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* === Skeleton Loading === */
+.skeleton-card {
+  background: #f4f4f5 !important;
+  /* bg-zinc-100 */
+  box-shadow: none !important;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #a1a1aa;
+  /* bg-zinc-400 */
+  border-radius: 4px;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-text {
+  height: 1.5rem;
+  width: 60%;
+}
+
+.skeleton-text-sm {
+  height: 0.75rem;
+  width: 50%;
+}
+
+.skeleton-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+/* === Layer Toggle === */
+.layer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.layer-toggle:hover {
+  background: #f3f4f6;
+}
+
+.layer-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #16a34a;
+}
+
+/* === Popup Styles === */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 0;
+  max-width: 90vw;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  min-width: 180px;
+  max-width: 400px;
+  font-size: 0.875rem;
+}
+
+.popup-header {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 12px 12px 0 0;
+  font-size: 0.875rem;
+}
+
+.popup-header strong {
+  font-size: 0.875rem;
+}
+
+.popup-body {
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.popup-body p {
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
+.popup-body .grid {
+  gap: 6px 12px !important;
+}
+
+/* Leaflet popup close button */
+.leaflet-popup-close-button {
+  top: 8px !important;
+  right: 8px !important;
+  color: white !important;
+  font-size: 18px !important;
+}
+
+/* Kabupaten popup specific */
+.kabupaten-popup .leaflet-popup-content {
+  min-width: 220px;
+}
+
+/* === Content Tab Panels === */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* === KPI Card === */
+.kpi-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); */
+  transition: all 0.3s;
+  border: 1px solid #e5e7eb;
+}
+
+.kpi-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.kpi-card.active-card {
+  box-shadow: 0 0 0 3px #16a34a, 0 4px 15px rgba(22, 163, 74, 0.3);
+  transform: scale(1.02);
+}
+
+.kpi-card.cursor-pointer {
+  cursor: pointer;
+}
+
+/* === Mobile Menu Overlay === */
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 60;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* === Mobile Menu Drawer === */
+.mobile-menu-drawer {
+  position: fixed;
+  top: 0;
+  right: -280px;
+  width: 280px;
+  height: 100vh;
+  background: white;
+  z-index: 70;
+  transition: right 0.3s ease;
+  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.mobile-menu-drawer.active {
+  right: 0;
+}
+
+.mobile-menu-drawer-header {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-menu-drawer-body {
+  padding: 1rem;
+}
+
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #374151;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.mobile-menu-item:hover,
+.mobile-menu-item.active {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.mobile-menu-item i {
+  width: 20px;
+  text-align: center;
+}
+
+/* === Hide scrollbar for tab bar === */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* === Better table wrapper for mobile === */
+.table-wrapper {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================
+   RESPONSIVE STYLES
+   ============================================ */
+
+/* === Desktop/Tablet (max-width: 1024px) === */
+@media (max-width: 1024px) {
+  .main-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .side-panel {
+    display: block;
+  }
+
+  .side-panel>div {
+    margin-bottom: 1rem;
+  }
+}
+
+/* === Tablet/Mobile (max-width: 768px) === */
+@media (max-width: 768px) {
+
+  /* Header responsive */
+  header h1 {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  /* KPI Cards lebih compact */
+  .kpi-card {
+    padding: 12px;
+  }
+
+  .kpi-card p.text-2xl,
+  .kpi-card p.text-xl {
+    font-size: 1.25rem;
+  }
+
+  .kpi-card .p-3 {
+    padding: 0.5rem;
+  }
+
+  /* Map height responsive */
+  .map-container-responsive {
+    height: 350px !important;
+    min-height: 300px;
+  }
+
+  /* Chart container */
+  .chart-container {
+    height: 180px;
+  }
+
+  /* Tab buttons lebih compact */
+  .tab-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .tab-btn i {
+    margin-right: 0.25rem;
+  }
+
+  /* Panel padding */
+  .panel {
+    padding: 0.75rem;
+  }
+
+  /* Filter bar wrap */
+  .filter-bar-mobile {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .filter-bar-mobile>div {
+    border-right: none !important;
+    padding-right: 0 !important;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .filter-bar-mobile>div:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  /* Layer toggles wrap */
+  .layer-toggles-mobile {
+    flex-wrap: wrap;
+    gap: 0.5rem !important;
+  }
+
+  /* Table responsive */
+  .data-table {
+    font-size: 0.75rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* Toast position */
+  #toastContainer {
+    top: 70px;
+    right: 10px;
+    left: 10px;
+  }
+
+  .toast {
+    min-width: auto;
+    width: 100%;
+  }
+
+  /* Touch scrolling */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Popup responsive */
+  .leaflet-popup-content-wrapper {
+    max-width: 85vw;
+  }
+
+  .leaflet-popup-content {
+    min-width: 200px !important;
+    max-width: 280px !important;
+    font-size: 0.75rem;
+  }
+
+  .popup-header {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .popup-header strong {
+    font-size: 0.8rem;
+  }
+
+  .popup-body {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    max-height: 50vh;
+  }
+
+  .popup-body p {
+    margin: 3px 0;
+  }
+
+  .popup-body .grid {
+    grid-template-columns: 1fr !important;
+    gap: 4px !important;
+  }
+
+  .popup-body .text-xs {
+    font-size: 0.65rem;
+  }
+
+  .popup-body .font-medium {
+    font-size: 0.75rem;
+  }
+
+  .kabupaten-popup .leaflet-popup-content {
+    min-width: 200px !important;
+    max-width: 260px !important;
+  }
+
+  /* Override inline min-width styles */
+  .popup-body[style*="min-width"] {
+    min-width: 220px !important;
+    max-width: 280px !important;
+  }
+
+  .leaflet-popup-content .grid[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* === Mobile Small (max-width: 480px) === */
+@media (max-width: 480px) {
+
+  /* Extra small screens */
+  header h1 {
+    font-size: 0.75rem;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .kpi-card p.text-2xl,
+  .kpi-card p.text-xl {
+    font-size: 1rem;
+  }
+
+  .kpi-card .text-xs {
+    font-size: 0.65rem;
+  }
+
+  /* Hide icon text on very small screens */
+  .tab-btn span.tab-text {
+    display: none;
+  }
+
+  .map-container-responsive {
+    height: 280px !important;
+    min-height: 250px;
+  }
+
+  /* Popup for mobile small */
+  .leaflet-popup-content-wrapper {
+    max-width: 80vw;
+  }
+
+  .leaflet-popup-content {
+    min-width: 180px !important;
+    max-width: 240px !important;
+    font-size: 0.7rem;
+  }
+
+  .popup-header {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+
+  .popup-header strong {
+    font-size: 0.75rem;
+  }
+
+  .popup-header i {
+    margin-right: 4px !important;
+  }
+
+  .popup-body {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+    max-height: 45vh;
+  }
+
+  .popup-body p {
+    margin: 2px 0;
+    line-height: 1.3;
+  }
+
+  .popup-body .badge {
+    padding: 2px 6px;
+    font-size: 0.6rem;
+  }
+
+  .popup-body[style*="min-width"] {
+    min-width: 180px !important;
+    max-width: 240px !important;
+  }
+
+  .leaflet-popup-close-button {
+    top: 4px !important;
+    right: 4px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* ============================================
+   MARKER CLUSTER STYLES
+   For optimal map performance with many markers
+   ============================================ */
+
+/* Base cluster icon styles */
+.marker-cluster-puskesmas,
+.marker-cluster-rsud,
+.marker-cluster-fasyankes,
+.marker-cluster-banlog,
+.marker-cluster-jaringan,
+.marker-cluster-cluster6 {
+  background: transparent !important;
+}
+
+/* Puskesmas Cluster - Green theme */
+.puskesmas-cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.puskesmas-cluster-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.5);
+}
+
+/* RSUD Cluster - Blue theme */
+.rsud-cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 3px 10px rgba(59, 130, 246, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.rsud-cluster-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.5);
+}
+
+/* Fasyankes V2 Cluster - Purple theme */
+.fasyankes-cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  box-shadow: 0 3px 10px rgba(139, 92, 246, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.fasyankes-cluster-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(139, 92, 246, 0.5);
+}
+
+/* Banlog Cluster - Yellow/Amber theme */
+.banlog-cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.banlog-cluster-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.5);
+}
+
+/* Jaringan Cluster - Red theme */
+.jaringan-cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  box-shadow: 0 3px 10px rgba(34, 197, 94, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.jaringan-cluster-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(34, 197, 94, 0.5);
+}
+
+/* Cluster 6 Cluster - Pink theme with size variations */
+.cluster6-cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  box-shadow: 0 3px 10px rgba(236, 72, 153, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.cluster6-cluster-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(236, 72, 153, 0.5);
+}
+
+/* Size variations for cluster icons */
+.cluster6-cluster-small,
+.faskes-cluster-small {
+  width: 36px;
+  height: 36px;
+  font-size: 11px;
+}
+
+.cluster6-cluster-medium,
+.faskes-cluster-medium {
+  width: 44px;
+  height: 44px;
+  font-size: 13px;
+}
+
+.cluster6-cluster-large,
+.faskes-cluster-large {
+  width: 52px;
+  height: 52px;
+  font-size: 14px;
+  border-width: 4px;
+}
+
+/* Spiderfied markers animation */
+.leaflet-marker-icon.leaflet-interactive {
+  transition: transform 0.15s ease;
+}
+
+/* Cluster animation */
+.marker-cluster-animated .cluster6-cluster-icon,
+.marker-cluster-animated .puskesmas-cluster-icon,
+.marker-cluster-animated .rsud-cluster-icon,
+.marker-cluster-animated .fasyankes-cluster-icon,
+.marker-cluster-animated .banlog-cluster-icon,
+.marker-cluster-animated .jaringan-cluster-icon {
+  animation: clusterPulse 2s ease-in-out infinite;
+}
+
+@keyframes clusterPulse {
+  0%, 100% {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Posko Cluster - Indigo theme */
+.posko-cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.posko-cluster-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(99, 102, 241, 0.5);
+}
+
+.marker-cluster-posko {
+  background: transparent !important;
+}
+
+/* Tenda Cluster - Amber theme */
+.tenda-cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.tenda-cluster-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.5);
+}
+
+.marker-cluster-tenda {
+  background: transparent !important;
+}
+
+/* Fasilitas Publik Cluster - Cyan theme */
+.faspublik-cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  box-shadow: 0 3px 10px rgba(6, 182, 212, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.faspublik-cluster-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(6, 182, 212, 0.5);
+}
+
+.marker-cluster-faspublik {
+  background: transparent !important;
+}
+
+/* Village Distribution Cluster - Emerald theme */
+.village-cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.village-cluster-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.5);
+}
+
+.marker-cluster-village {
+  background: transparent !important;
+}
+
+/* Override default MarkerCluster styles */
+.marker-cluster {
+  background-clip: padding-box;
+}
+
+.marker-cluster div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-cluster span {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ============================================
+   WILAYAH POLYGON STYLES
+   ============================================ */
+
+/* Polygon tooltip */
+.polygon-tooltip {
+  background: white;
+  border: 1px solid #6366f1;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Polygon popup - Wide horizontal layout */
+.polygon-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.polygon-popup .leaflet-popup-content {
+  margin: 0;
+  min-width: 480px;
+  max-width: 600px;
+}
+
+.polygon-popup-content {
+  font-size: 0.875rem;
+}
+
+.polygon-popup-content .popup-header {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border-radius: 0;
+  margin: 0;
+}
+
+/* Horizontal layout for popup body */
+.polygon-popup-body {
+  display: flex;
+  gap: 12px;
+}
+
+.polygon-popup-left {
+  flex: 1;
+  min-width: 200px;
+}
+
+.polygon-popup-right {
+  flex: 1;
+  min-width: 200px;
+  border-left: 1px solid #e5e7eb;
+  padding-left: 12px;
+}
+
+/* Pagination styles for breakdown */
+.polygon-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.polygon-pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  font-size: 12px;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
+}
+
+.polygon-pagination-btn:hover:not(:disabled) {
+  background: #6366f1;
+  color: white;
+}
+
+.polygon-pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.polygon-pagination-info {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* Breakdown items horizontal scroll */
+.polygon-breakdown-container {
+  min-height: 100px;
+}
+
+.polygon-breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  background: #f9fafb;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.polygon-breakdown-item:hover {
+  background: #eef2ff;
+}
+
+.polygon-breakdown-name {
+  font-weight: 500;
+  color: #374151;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 8px;
+}
+
+.polygon-breakdown-stats {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Polygon search results */
+.polygon-search-item {
+  transition: all 0.15s ease;
+}
+
+.polygon-search-item:hover {
+  background: #eef2ff;
+}
+
+/* Polygon legend */
+.polygon-legend {
+  font-family: 'Inter', sans-serif;
+}
+
+#polygon-legend-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Polygon layer toggle badge */
+#layer-polygon:checked + i {
+  color: #7c3aed;
+}
+
+/* Polygon controls styling */
+#polygon-controls {
+  background: rgba(139, 92, 246, 0.05);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+#polygon-search-input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+#polygon-search-results {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Responsive polygon styles */
+@media (max-width: 768px) {
+  .polygon-popup .leaflet-popup-content {
+    min-width: 300px !important;
+    max-width: 90vw !important;
+  }
+
+  .polygon-popup-content {
+    font-size: 0.75rem;
+  }
+
+  .polygon-popup-body {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .polygon-popup-right {
+    border-left: none;
+    border-top: 1px solid #e5e7eb;
+    padding-left: 0;
+    padding-top: 8px;
+  }
+
+  #polygon-controls {
+    flex-wrap: wrap;
+  }
+
+  #polygon-search-input {
+    width: 100% !important;
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .polygon-popup .leaflet-popup-content {
+    min-width: 280px !important;
+    max-width: 95vw !important;
+  }
+
+  .polygon-breakdown-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .polygon-breakdown-stats {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* ============================================
+   PETA OPERASI FULLSCREEN LAYOUT
+   ============================================ */
+
+/* Fullscreen map container */
+.map-fullscreen-container {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 180px);
+  min-height: 500px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.map-fullscreen-container #mapOperasi {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  z-index: 1;
+}
+
+/* Right side overlay cards */
+.map-overlay-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 220px;
+  max-height: calc(100% - 20px);
+  overflow-y: auto;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.map-overlay-right::-webkit-scrollbar {
+  width: 4px;
+}
+
+.map-overlay-right::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 2px;
+}
+
+.map-overlay-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.map-overlay-card h3 {
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+/* Bottom right layer control */
+.map-overlay-bottom-right {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+}
+
+.layer-control-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  max-width: 300px;
+}
+
+.layer-control-panel .layer-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.layer-control-panel .layer-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.layer-control-panel label {
+  font-size: 10px !important;
+  padding: 4px 6px !important;
+}
+
+.layer-control-panel label span {
+  font-size: 10px !important;
+}
+
+/* Collapsible layer control */
+.layer-control-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  font-size: 11px;
+  font-weight: 500;
+  color: #374151;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.layer-control-toggle:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.layer-control-content {
+  display: none;
+  margin-top: 8px;
+}
+
+.layer-control-content.expanded {
+  display: block;
+}
+
+/* Responsive for fullscreen map */
+@media (max-width: 1024px) {
+  .map-fullscreen-container {
+    height: calc(100vh - 200px);
+  }
+
+  .map-overlay-right {
+    width: 180px;
+  }
+
+  .map-overlay-card {
+    padding: 10px;
+  }
+
+  .map-overlay-card h3 {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .map-fullscreen-container {
+    height: calc(100vh - 220px);
+    min-height: 400px;
+  }
+
+  .map-overlay-right {
+    width: 160px;
+    top: 8px;
+    right: 8px;
+    gap: 6px;
+  }
+
+  .map-overlay-card {
+    padding: 8px;
+  }
+
+  .map-overlay-card h3 {
+    font-size: 9px;
+    margin-bottom: 6px;
+  }
+
+  .map-overlay-card .text-xs {
+    font-size: 9px !important;
+  }
+
+  .map-overlay-bottom-right {
+    bottom: 8px;
+    right: 8px;
+    left: 8px;
+  }
+
+  .layer-control-panel {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-fullscreen-container {
+    height: calc(100vh - 240px);
+    min-height: 350px;
+  }
+
+  .map-overlay-right {
+    width: 140px;
+    max-height: 50%;
+  }
+
+  .map-overlay-card {
+    padding: 6px;
+  }
+
+  .map-overlay-card h3 {
+    font-size: 8px;
+  }
+
+  .map-overlay-card .text-xs {
+    font-size: 8px !important;
+  }
+}
