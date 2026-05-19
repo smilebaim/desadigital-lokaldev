@@ -47,7 +47,7 @@ export const KONTROL_ENDPOINTS: KontrolEndpoint[] = [
   {
     id: "bantuan-logistik",
     label: "Bantuan Logistik",
-    path: "/realtime/bantuan-logistik",
+    path: "/api/realtime/bantuan-logistik",
     group: "Realtime",
     description: "Distribusi bantuan per desa",
   },
