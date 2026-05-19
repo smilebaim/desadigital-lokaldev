@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
@@ -11,7 +12,8 @@ export default function DashboardClient() {
   const [faskes, setFaskes] = useState<any>({ pkm: [], rsud: [], v2: [] });
   const [loading, setLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLayerControlExpanded, setIsLayerControlExpanded] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<string>('');
 
   const mapInstance = useRef<any>(null);
   const chartInstance = useRef<any>(null);
@@ -31,7 +33,11 @@ export default function DashboardClient() {
       setBencana(resBnc);
       setJaringan(resJrg);
       setCluster(resCls);
-      setFaskes({ pkm: resPkm.data, rsud: resRsud.data, v2: resV2.data });
+      setFaskes({ pkm: resPkm.data || [], rsud: resRsud.data || [], v2: resV2.data || [] });
+      
+      if (resBnc?.updated_at) {
+        setLastUpdate(new Date(resBnc.updated_at).toLocaleTimeString());
+      }
     } catch (error) {
       console.error('Gagal mengambil data:', error);
     } finally {
@@ -40,17 +46,31 @@ export default function DashboardClient() {
   }, []);
 
   useEffect(() => {
+    setMounted(true);
     fetchData();
     const interval = setInterval(fetchData, 300000); // Refresh setiap 5 menit
     return () => clearInterval(interval);
   }, [fetchData]);
 
+  // Handle Map Resizing when tab changes
+  useEffect(() => {
+    if (mapInstance.current) {
+      setTimeout(() => {
+        mapInstance.current.invalidateSize();
+      }, 200);
+    }
+  }, [activeTab]);
+
   // Inisialisasi Peta
   useEffect(() => {
-    if (loading || !bencana || typeof window === 'undefined' || !(window as any).L) return;
+    if (!mounted || loading || !bencana || typeof window === 'undefined') return;
 
     const L = (window as any).L;
+    if (!L) return;
     
+    const mapElement = document.getElementById('map');
+    if (!mapElement) return;
+
     if (!mapInstance.current) {
       mapInstance.current = L.map('map').setView([4.6, 96.5], 7);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -58,65 +78,74 @@ export default function DashboardClient() {
       }).addTo(mapInstance.current);
     }
 
-    // Clear existing markers if any
+    // Clear existing markers
     mapInstance.current.eachLayer((layer: any) => {
       if (layer instanceof L.Marker) mapInstance.current.removeLayer(layer);
     });
 
     // Add Bencana Markers
-    bencana.data?.forEach((item: any) => {
-      const color = item.status === 'critical' ? '#ef4444' : item.status === 'warning' ? '#f59e0b' : '#10b981';
-      const icon = L.divIcon({
-        className: 'custom-div-icon',
-        html: `<div class="marker-icon" style="background-color: ${color}"><i class="fas fa-exclamation-triangle"></i></div>`,
-        iconSize: [24, 24]
+    if (bencana.data && Array.isArray(bencana.data)) {
+      bencana.data.forEach((item: any) => {
+        const color = item.status === 'critical' ? '#ef4444' : item.status === 'warning' ? '#f59e0b' : '#10b981';
+        const icon = L.divIcon({
+          className: 'custom-div-icon',
+          html: `<div class="marker-icon" style="background-color: ${color}"><i class="fas fa-exclamation-triangle"></i></div>`,
+          iconSize: [24, 24]
+        });
+        L.marker([item.lat, item.lng], { icon })
+          .bindPopup(`<strong>${item.desa}</strong><br>${item.jenis_bencana}<br>Status: ${item.status}`)
+          .addTo(mapInstance.current);
       });
-      L.marker([item.lat, item.lng], { icon })
-        .bindPopup(`<strong>${item.desa}</strong><br>${item.jenis_bencana}<br>Status: ${item.status}`)
-        .addTo(mapInstance.current);
-    });
+    }
 
-    return () => {
-      if (mapInstance.current) {
-        // Kita tidak menghancurkan map setiap render untuk performa, 
-        // tapi pastikan ukurannya benar saat tab berubah
-        setTimeout(() => mapInstance.current.invalidateSize(), 100);
-      }
-    };
-  }, [loading, bencana, activeTab]);
+    // Force resize on mount/data load
+    setTimeout(() => mapInstance.current?.invalidateSize(), 100);
+
+  }, [mounted, loading, bencana, activeTab]);
 
   // Inisialisasi Grafik
   useEffect(() => {
-    if (loading || !bencana || typeof window === 'undefined' || !(window as any).Chart) return;
+    if (!mounted || loading || !bencana || typeof window === 'undefined') return;
+
+    const Chart = (window as any).Chart;
+    if (!Chart) return;
 
     const ctx = document.getElementById('chartStatusDampak') as HTMLCanvasElement;
     if (!ctx) return;
 
     if (chartInstance.current) chartInstance.current.destroy();
 
-    const Chart = (window as any).Chart;
+    const dataPoints = [
+      bencana.data?.filter((d: any) => d.status === 'critical').length || 0,
+      bencana.data?.filter((d: any) => d.status === 'warning').length || 0,
+      bencana.data?.filter((d: any) => d.status === 'normal').length || 0,
+    ];
+
     chartInstance.current = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: ['Critical', 'Warning', 'Normal'],
         datasets: [{
-          data: [
-            bencana.data.filter((d: any) => d.status === 'critical').length,
-            bencana.data.filter((d: any) => d.status === 'warning').length,
-            bencana.data.filter((d: any) => d.status === 'normal').length,
-          ],
+          data: dataPoints,
           backgroundColor: ['#ef4444', '#f59e0b', '#10b981']
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } }
+        plugins: { 
+          legend: { 
+            position: 'bottom',
+            labels: { boxWidth: 12, padding: 10, font: { size: 10 } }
+          } 
+        }
       }
     });
-  }, [loading, bencana, activeTab]);
+  }, [mounted, loading, bencana, activeTab]);
 
   const toggleMobileMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  if (!mounted) return null;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -172,9 +201,7 @@ export default function DashboardClient() {
               </a>
               <div className="text-right hidden sm:block">
                 <p className="text-xs text-primary-200">Update Terakhir</p>
-                <p className="text-xs md:text-sm font-medium">
-                  {bencana?.updated_at ? new Date(bencana.updated_at).toLocaleTimeString() : '-'}
-                </p>
+                <p className="text-xs md:text-sm font-medium">{lastUpdate || '-'}</p>
               </div>
               <button onClick={fetchData} className="bg-white/20 hover:bg-white/30 p-1.5 md:p-2 rounded-lg transition">
                 <i className={`fas fa-sync-alt ${loading ? 'animate-spin' : ''}`} />
@@ -228,7 +255,7 @@ export default function DashboardClient() {
               <KPIItem label="Titik Pengungsian" value={bencana?.total_titik_pengungsian} icon="fa-map-pin" color="blue" />
               <KPIItem label="Rumah Rusak" value={bencana?.total_rumah} icon="fa-home" color="red" />
               <KPIItem label="Sawah (Ha)" value={bencana?.total_sawah?.toFixed(1)} icon="fa-seedling" color="green" />
-              <KPIItem label="Kabupaten Terdampak" value={new Set(bencana?.data?.map((d:any) => d.kabkota)).size} icon="fa-city" color="purple" />
+              <KPIItem label="Kabupaten Terdampak" value={bencana?.data ? new Set(bencana.data.map((d:any) => d.kabkota)).size : 0} icon="fa-city" color="purple" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -258,6 +285,7 @@ export default function DashboardClient() {
                         <span className="font-semibold text-primary-600">Rp {(c.nilai_kerusakan/1e6).toFixed(1)}M</span>
                      </div>
                    ))}
+                   {(!cluster?.cluster6 || cluster.cluster6.length === 0) && !loading && <p className="text-xs text-gray-400 text-center py-4">Tidak ada data cluster</p>}
                 </div>
               </div>
             </div>
@@ -268,7 +296,7 @@ export default function DashboardClient() {
         {activeTab === 'peta-operasi' && (
           <div className="map-fullscreen-container panel">
             <div id="mapOperasi" className="h-full w-full bg-gray-100 flex items-center justify-center">
-               <p className="text-gray-400">Gunakan Peta Utama untuk interaksi data spasial</p>
+               <p className="text-gray-400">Pilih lapisan data untuk ditampilkan pada peta operasi</p>
             </div>
             <div className="map-overlay-right">
               <div className="map-overlay-card">
@@ -311,9 +339,9 @@ function KPIItem({ label, value, icon, color }: any) {
     <div className="kpi-card flex items-center justify-between">
       <div>
         <p className="text-[10px] md:text-xs text-gray-500 uppercase font-medium">{label}</p>
-        <p className="text-lg md:text-xl font-bold text-gray-800">{value ?? '-'}</p>
+        <p className="text-lg md:text-xl font-bold text-gray-800">{value !== undefined && value !== null ? value : '-'}</p>
       </div>
-      <div className={`${colors[color]} p-2 md:p-3 rounded-full`}>
+      <div className={`${colors[color] || 'bg-gray-100 text-gray-600'} p-2 md:p-3 rounded-full`}>
         <i className={`fas ${icon} text-sm md:text-base`} />
       </div>
     </div>
@@ -324,7 +352,7 @@ function StatRow({ label, value, color = 'text-gray-800', last = false }: any) {
   return (
     <div className={`flex justify-between items-center py-2 ${!last ? 'border-b border-gray-100' : ''}`}>
       <span className="text-xs text-gray-500">{label}</span>
-      <span className={`text-xs font-semibold ${color}`}>{value ?? '-'}</span>
+      <span className={`text-xs font-semibold ${color}`}>{value !== undefined && value !== null ? value : '-'}</span>
     </div>
   );
 }
