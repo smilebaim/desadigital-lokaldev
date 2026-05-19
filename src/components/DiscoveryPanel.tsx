@@ -1,8 +1,7 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Globe, Users, Maximize2, Sparkles, Navigation, Info } from 'lucide-react';
+import { X, Globe, Users, Maximize2, Sparkles, Navigation, Info, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
