@@ -16,6 +16,7 @@ export default function DashboardClient() {
   const [lastUpdate, setLastUpdate] = useState<string>('');
 
   const mapInstance = useRef<any>(null);
+  const mapOperasiInstance = useRef<any>(null);
   const chartInstance = useRef<any>(null);
 
   const fetchData = useCallback(async () => {
@@ -33,7 +34,11 @@ export default function DashboardClient() {
       setBencana(resBnc);
       setJaringan(resJrg);
       setCluster(resCls);
-      setFaskes({ pkm: resPkm.data || [], rsud: resRsud.data || [], v2: resV2.data || [] });
+      setFaskes({ 
+        pkm: resPkm?.data || [], 
+        rsud: resRsud?.data || [], 
+        v2: resV2?.data || [] 
+      });
       
       if (resBnc?.updated_at) {
         setLastUpdate(new Date(resBnc.updated_at).toLocaleTimeString());
@@ -54,16 +59,19 @@ export default function DashboardClient() {
 
   // Handle Map Resizing when tab changes
   useEffect(() => {
-    if (mapInstance.current) {
-      setTimeout(() => {
+    const timeout = setTimeout(() => {
+      if (activeTab === 'dampak' && mapInstance.current) {
         mapInstance.current.invalidateSize();
-      }, 200);
-    }
+      } else if (activeTab === 'peta-operasi' && mapOperasiInstance.current) {
+        mapOperasiInstance.current.invalidateSize();
+      }
+    }, 300);
+    return () => clearTimeout(timeout);
   }, [activeTab]);
 
-  // Inisialisasi Peta
+  // Inisialisasi Peta Dampak
   useEffect(() => {
-    if (!mounted || loading || !bencana || typeof window === 'undefined') return;
+    if (!mounted || loading || !bencana || activeTab !== 'dampak' || typeof window === 'undefined') return;
 
     const L = (window as any).L;
     if (!L) return;
@@ -98,14 +106,48 @@ export default function DashboardClient() {
       });
     }
 
-    // Force resize on mount/data load
-    setTimeout(() => mapInstance.current?.invalidateSize(), 100);
-
   }, [mounted, loading, bencana, activeTab]);
+
+  // Inisialisasi Peta Operasi
+  useEffect(() => {
+    if (!mounted || loading || activeTab !== 'peta-operasi' || typeof window === 'undefined') return;
+
+    const L = (window as any).L;
+    if (!L) return;
+    
+    const mapElement = document.getElementById('mapOperasi');
+    if (!mapElement) return;
+
+    if (!mapOperasiInstance.current) {
+      mapOperasiInstance.current = L.map('mapOperasi').setView([4.6, 96.5], 7);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(mapOperasiInstance.current);
+    }
+
+    // Clear and Redraw markers for Operation Map
+    mapOperasiInstance.current.eachLayer((layer: any) => {
+      if (layer instanceof L.Marker) mapOperasiInstance.current.removeLayer(layer);
+    });
+
+    // Add Faskes Markers to Operation Map
+    [...faskes.pkm, ...faskes.rsud].forEach((item: any) => {
+      const color = item.id.startsWith('PKM') ? '#10b981' : '#3b82f6';
+      const icon = L.divIcon({
+        className: 'custom-div-icon',
+        html: `<div class="marker-icon" style="background-color: ${color}"><i class="fas fa-hospital"></i></div>`,
+        iconSize: [20, 20]
+      });
+      L.marker([item.lat, item.lng], { icon })
+        .bindPopup(`<strong>${item.nama}</strong><br>${item.tipe || 'Fasilitas Kesehatan'}`)
+        .addTo(mapOperasiInstance.current);
+    });
+
+  }, [mounted, loading, activeTab, faskes]);
 
   // Inisialisasi Grafik
   useEffect(() => {
-    if (!mounted || loading || !bencana || typeof window === 'undefined') return;
+    if (!mounted || loading || !bencana || activeTab !== 'dampak' || typeof window === 'undefined') return;
 
     const Chart = (window as any).Chart;
     if (!Chart) return;
@@ -141,6 +183,10 @@ export default function DashboardClient() {
         }
       }
     });
+
+    return () => {
+      if (chartInstance.current) chartInstance.current.destroy();
+    };
   }, [mounted, loading, bencana, activeTab]);
 
   const toggleMobileMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -151,13 +197,11 @@ export default function DashboardClient() {
     <div className="min-h-screen flex flex-col">
       <div id="toastContainer" />
       
-      {/* Mobile Menu Overlay */}
       <div 
         className={`mobile-menu-overlay ${isMenuOpen ? 'active' : ''}`} 
         onClick={toggleMobileMenu} 
       />
 
-      {/* Mobile Menu Drawer */}
       <div className={`mobile-menu-drawer ${isMenuOpen ? 'active' : ''}`}>
         <div className="mobile-menu-drawer-header">
           <span className="font-semibold">Menu</span>
@@ -214,7 +258,6 @@ export default function DashboardClient() {
         </div>
       </header>
 
-      {/* Tabs */}
       <div className="bg-white shadow-sm border-b sticky top-14 md:top-16 z-40">
         <div className="container-fluid px-2 md:px-4">
           <div className="flex items-center gap-1 overflow-x-auto py-1 scrollbar-hide">
@@ -246,7 +289,6 @@ export default function DashboardClient() {
           </div>
         )}
 
-        {/* TAB: Dampak */}
         {activeTab === 'dampak' && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -292,12 +334,9 @@ export default function DashboardClient() {
           </div>
         )}
 
-        {/* TAB: Peta Operasi */}
         {activeTab === 'peta-operasi' && (
           <div className="map-fullscreen-container panel">
-            <div id="mapOperasi" className="h-full w-full bg-gray-100 flex items-center justify-center">
-               <p className="text-gray-400">Pilih lapisan data untuk ditampilkan pada peta operasi</p>
-            </div>
+            <div id="mapOperasi" className="h-full w-full" />
             <div className="map-overlay-right">
               <div className="map-overlay-card">
                 <h3><i className="fas fa-hospital text-green-500 mr-1" />Faskes</h3>
